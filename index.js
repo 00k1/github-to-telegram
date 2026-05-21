@@ -76,12 +76,14 @@ router.post("/webhook", (req, res) => {
       "View Commit",
       data.head_commit.url
     );
-  } else if (data.forkee) {
+    } else if (data.head_commit) {
+    const branch = data.ref.split("/")[2];
     sendMessage(
-      `<a href="${data.repository.html_url}/network/members><b>[${data.repository.full_name}] Fork Created: [${data.forkee.full_name}]</b></a>"`,
-      "View Fork",
-      data.forkee.html_url
+      `<a href="${data.repository.html_url}"><b>[${data.repository.name}:${branch}] 1 new commit</b></a>\n<code>${data.after.substring(0, 7)}</code> ${data.head_commit.message} - ${data.head_commit.author.username}`,
+      "View Commit",
+      data.head_commit.url
     );
+
   } else if (data.action && data.issue) {
     if (
       data.action === "opened" ||
