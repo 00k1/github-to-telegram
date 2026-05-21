@@ -23,7 +23,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 async function sendMessage(message, buttontext, buttonurl) {
-  await bot.telegram.sendMessage(TELEGRAM_CHAT_ID, message, {
+  // Configured to send message parameters safely to specific topics
+  const messageOptions = {
     parse_mode: "html",
     disable_web_page_preview: true,
     reply_markup: {
@@ -36,7 +37,14 @@ async function sendMessage(message, buttontext, buttonurl) {
         ],
       ],
     },
-  });
+  };
+
+  // If TOPIC_ID is present in environment variables, add it to options
+  if (process.env.TOPIC_ID) {
+    messageOptions.message_thread_id = parseInt(process.env.TOPIC_ID, 10);
+  }
+
+  await bot.telegram.sendMessage(TELEGRAM_CHAT_ID, message, messageOptions);
 }
 
 router.post("/webhook", (req, res) => {
